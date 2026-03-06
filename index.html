@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Los Cacharritos | Auténtica Cocina Cubana en La Habana</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Los Cacharritos - Restaurante tradicional cubano en La Habana. Ropa vieja, mojitos, lechón asado y más. Reserva tu mesa vía WhatsApp.">
+  <meta name="keywords" content="restaurante cubano, La Habana, comida cubana, Los Cacharritos, Los Kacharritos, mojito, ropa vieja, reservas">
+  <meta name="author" content="Los Cacharritos">
+  <meta property="og:title" content="Los Cacharritos | Cocina Cubana Auténtica">
+  <meta property="og:description" content="Disfruta la verdadera sazón cubana en el corazón de La Habana">
+  <meta property="og:type" content="restaurant">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Framer Motion (para animaciones suaves) -->
+  <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    :root {
+      --cuban-orange: #D2691E;
+      --cuban-yellow: #F4A460;
+      --cuban-green: #228B22;
+      --cuban-cream: #FDF5E6;
+      --cuban-red: #C41E3A;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--cuban-cream);
+      overflow-x: hidden;
+    }
+    
+    .font-display {
+      font-family: 'Playfair Display', serif;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--cuban-orange);
+      border-radius: 5px;
+    }
+    
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(210, 105, 30, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(210, 105, 30, 0.6); }
+    }
+    
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .animate-pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .text-shadow {
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .hover-lift {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+    }
+    .hover-lift:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px -15px rgba(210, 105, 30, 0.3);
+    }
+    
+    .menu-card {
+      background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+      border: 1px solid rgba(210, 105, 30, 0.1);
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #D2691E 0%, #F4A460 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 9999;
+      transform: translateX(400px);
+      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    /* Loading Skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    
+    /* Image hover zoom */
+    .img-zoom-container {
+      overflow: hidden;
+    }
+    .img-zoom {
+      transition: transform 0.5s ease;
+    }
+    .img-zoom-container:hover .img-zoom {
+      transform: scale(1.1);
+    }
+    
+    /* Custom checkbox */
+    .custom-checkbox {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--cuban-orange);
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+    }
+    .custom-checkbox:checked {
+      background: var(--cuban-orange);
+    }
+    .custom-checkbox:checked::after {
+      content: '✓';
+      position: absolute;
+      color: white;
+      font-size: 14px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'cuban-orange': '#D2691E',
+            'cuban-yellow': '#F4A460',
+            'cuban-green': '#228B22',
+            'cuban-cream': '#FDF5E6',
+            'cuban-red': '#C41E3A',
+            'cuban-dark': '#2C1810',
+          },
+          fontFamily: {
+            'display': ['Playfair Display', 'serif'],
+            'body': ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="antialiased text-gray-800">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+    const { motion, AnimatePresence } = window.Motion;
+    
+    // --- Icon Components ---
+    const Icon = ({ name, size = 24, className = "" }) => {
+      const icons = {
+        menu: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
+        close: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+        phone: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+        mapPin: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>,
+        clock: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+        star: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+        chevronRight: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="9 18 15 12 9 6"/></svg>,
+        shoppingBag: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
+        whatsapp: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>,
+        instagram: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>,
+        facebook: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>,
+        plus: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+        minus: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+        trash: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,
+        check: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="20 6 9 17 4 12"/></svg>,
+        sun: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>,
+        moon: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>,
+        arrowUp: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+      };
+      return icons[name] || null;
+    };
+    
+    // --- Toast Component ---
+    const Toast = ({ message, type, isVisible, onClose }) => {
+      useEffect(() => {
+        if (isVisible) {
+          const timer = setTimeout(onClose, 3000);
+          return () => clearTimeout(timer);
+        }
+      }, [isVisible, onClose]);
+      
+      return (
+        <div className={`toast ${isVisible ? 'show' : ''} ${type === 'success' ? 'border-l-4 border-cuban-green' : 'border-l-4 border-cuban-orange'}`}>
+          <div className={`w-6 h-6 rounded-full flex items-center justify-center ${type === 'success' ? 'bg-cuban-green' : 'bg-cuban-orange'}`}>
+            <Icon name={type === 'success' ? 'check' : 'info'} size={16} className="text-white" />
+          </div>
+          <span className="font-medium text-gray-800">{message}</span>
+        </div>
+      );
+    };
+    
+    // --- Header Component ---
+    const Header = ({ cartCount, onCartClick, onReservaClick, isDark, toggleTheme }) => {
+      const [isScrolled, setIsScrolled] = useState(false);
+      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+      
+      useEffect(() => {
+        const handleScroll = () => setIsScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+      
+      const navItems = [
+        { label: 'Inicio', href: '#inicio' },
+        { label: 'Menú', href: '#menu' },
+        { label: 'Galería', href: '#galeria' },
+        { label: 'Reseñas', href: '#testimonios' },
+        { label: 'Contacto', href: '#contacto' },
+      ];
+      
+      return (
+        <motion.header 
+          initial={{ y: -100 }}
+          animate={{ y: 0 }}
+          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'
+          }`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <motion.a 
+              href="#inicio"
+              className="flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+            >
+              <span className={`text-2xl md:text-3xl font-display font-black tracking-tight ${
+                isScrolled ? 'text-cuban-orange' : 'text-white'
+              }`}>
+                Los Cacharritos
+              </span>
+              <span className="hidden sm:inline-flex items-center px-2 py-1 rounded-full bg-cuban-yellow/20 text-xs font-bold text-cuban-orange border border-cuban-orange/20">
+                🇨🇺 Kacharritos
+              </span>
+            </motion.a>
+            
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-8">
+              {navItems.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className={`font-medium transition-colors hover:text-cuban-orange ${
+                    isScrolled ? 'text-gray-700' : 'text-white/90 hover:text-white'
+                  }`}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+            
+            <div className="flex items-center gap-3">
+              <button
+                onClick={toggleTheme}
+                className={`p-2 rounded-full transition-colors ${
+                  isScrolled ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/10 text-white'
+                }`}
+              >
+                <Icon name={isDark ? 'sun' : 'moon'} size={20} />
+              </button>
+              
+              <button
+                onClick={onCartClick}
+                className={`relative p-2 rounded-full transition-colors ${
+                  isScrolled ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/10 text-white'
+                }`}
+              >
+                <Icon name="shoppingBag" size={22} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-cuban-red text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+              
+              <button
+                onClick={onReservaClick}
+                className="hidden md:flex items-center gap-2 bg-cuban-orange hover:bg-cuban-yellow text-white px-6 py-2.5 rounded-full font-semibold transition-all hover:shadow-lg hover:scale-105"
+              >
+                <Icon name="phone" size={18} />
+                Reservar
+              </button>
+              
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className={`md:hidden p-2 rounded-lg transition-colors ${
+                  isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/10 text-white'
+                }`}
+              >
+                <Icon name={mobileMenuOpen ? 'close' : 'menu'} size={24} />
+              </button>
+            </div>
+          </div>
+          
+          {/* Mobile Menu */}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="md:hidden bg-white border-t shadow-xl"
+              >
+                <nav className="flex flex-col p-4 space-y-2">
+                  {navItems.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="py-3 px-4 rounded-xl hover:bg-cuban-cream text-gray-800 font-medium transition-colors"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onReservaClick();
+                    }}
+                    className="mt-4 w-full bg-cuban-orange text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"
+                  >
+                    <Icon name="phone" size={20} />
+                    Reservar Mesa
+                  </button>
+                </nav>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.header>
+      );
+    };
+    
+    // --- Hero Component ---
+    const Hero = ({ onReservaClick }) => {
+      return (
+        <section id="inicio" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+          {/* Background Image with Parallax */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-fixed"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')"
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+          </div>
+          
+          {/* Decorative Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-32 h-32 bg-cuban-orange/20 rounded-full blur-3xl animate-float" />
+            <div className="absolute bottom-20 right-10 w-48 h-48 bg-cuban-yellow/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
+          </div>
+          
+          <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <span className="inline-block px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-sm font-medium mb-6 border border-white/20">
+                🏆 Mejor Restaurante Cubano 2024
+              </span>
+              
+              <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 text-shadow leading-tight">
+                Los Cacharritos
+              </h1>
+              
+              <p className="text-xl md:text-3xl text-white/90 font-light italic mb-4 font-display">
+                Donde la tradición se saborea
+              </p>
+              
+              <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10">
+                Experimenta la auténtica cocina cubana en el corazón de La Habana. 
+                Desde 1998 sirviendo los mejores mojitos y la ropa vieja más sabrosa de la ciudad.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <motion.button
+                  onClick={onReservaClick}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="group bg-cuban-orange hover:bg-cuban-yellow text-white px-8 py-4 rounded-full text-lg font-bold transition-all shadow-2xl hover:shadow-cuban-orange/50 flex items-center gap-3 animate-pulse-glow"
+                >
+                  <Icon name="phone" size={20} />
+                  Reserva tu Mesa
+                  <Icon name="chevronRight" size={20} className="group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+                
+                <motion.a
+                  href="#menu"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all border border-white/30"
+                >
+                  Ver Menú
+                </motion.a>
+              </div>
+            </motion.div>
+            
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto"
+            >
+              {[
+                { value: '25+', label: 'Años de historia' },
+                { value: '50K+', label: 'Clientes felices' },
+                { value: '4.9', label: '⭐ Rating' },
+              ].map((stat, i) => (
+                <div key={i} className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-white font-display">{stat.value}</div>
+                  <div className="text-sm text-white/70 mt-1">{stat.label}</div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+          
+          {/* Scroll Indicator */}
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50"
+          >
+            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
+              <div className="w-1.5 h-3 bg-white/50 rounded-full" />
+            </div>
+          </motion.div>
+        </section>
+      );
+    };
+    
+    // --- Menu Section ---
+    const MenuSection = ({ addToCart }) => {
+      const [activeCategory, setActiveCategory] = useState('Entradas');
+      const [hoveredItem, setHoveredItem] = useState(null);
+      
+      const categories = {
+        Entradas: [
+          { id: 1, name: 'Tostones Rellenos', desc: 'Crujientes tostones rellenos de picadillo sazonado con especias cubanas', price: 350, priceUSD: 12, image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400', tags: ['Popular'] },
+          { id: 2, name: 'Yuca con Mojo', desc: 'Yuca tierna con nuestro mojo tradicional de ajo y naranja agria', price: 280, priceUSD: 9, image: 'https://images.unsplash.com/photo-1541529086526-db283c563270?w=400' },
+          { id: 3, name: 'Ensalada de Aguacate', desc: 'Aguacate fresco, tomate, cebolla morada y vinagreta de limón', price: 320, priceUSD: 11, image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400', tags: ['Vegetariano'] },
+          { id: 4, name: 'Croquetas de la Casa', desc: 'Croquetas caseras de jamón ibérico con salsa de mostaza', price: 380, priceUSD: 13, image: 'https://images.unsplash.com/photo-1606757389647-67b360512219?w=400' },
+        ],
+        Principales: [
+          { id: 5, name: 'Ropa Vieja', desc: 'Nuestro plato estrella: carne desmechada en salsa de tomate con pimientos', price: 850, priceUSD: 28, image: 'https://images.unsplash.com/photo-1534352956036-cd81e27fed21?w=400', tags: ['Especialidad'] },
+          { id: 6, name: 'Lechón Asado', desc: 'Cerdo marinado 24h en mojo criollo, horneado hasta dorar', price: 920, priceUSD: 31, image: 'https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=400', tags: ['Recomendado'] },
+          { id: 7, name: 'Arroz con Pollo', desc: 'Arroz amarillo con azafrán, pollo desmechado y vegetales', price: 780, priceUSD: 26, image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400' },
+          { id: 8, name: 'Picadillo Habanero', desc: 'Carne molida con aceitunas, pasas y especias, acompañado de arroz y plátano', price: 720, priceUSD: 24, image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400' },
+          { id: 9, name: 'Pescado Entero', desc: 'Pescado fresco del día a la plancha con mojo de cilantro', price: 980, priceUSD: 33, image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400', tags: ['Pescado'] },
+        ],
+        Postres: [
+          { id: 10, name: 'Flan de Caramelo', desc: 'Flan casero de leche condensada con caramelo líquido', price: 280, priceUSD: 9, image: 'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=400', tags: ['Clásico'] },
+          { id: 11, name: 'Tres Leches', desc: 'Bizcocho empapado en tres tipos de leche con merengue', price: 320, priceUSD: 11, image: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400' },
+          { id: 12, name: 'Helado de Mantecado', desc: 'Helado artesanal de sabor tradicional cubano', price: 220, priceUSD: 7, image: 'https://images.unsplash.com/photo-1560008581-09826d1de69e?w=400' },
+        ],
+        Bebidas: [
+          { id: 13, name: 'Mojito Cubano', desc: 'Ron Havana Club, hierbabuena fresca, lima, azúcar y soda', price: 450, priceUSD: 15, image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400', tags: ['Signature'] },
+          { id: 14, name: 'Cuba Libre', desc: 'Ron cola con un toque de limón fresco', price: 380, priceUSD: 13, image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400' },
+          { id: 15, name: 'Daiquirí', desc: 'Ron, limón fresco, azúcar y hielo triturado', price: 420, priceUSD: 14, image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400' },
+          { id: 16, name: 'Café Cubano', desc: 'Café espresso cargado con espuma de azúcar', price: 120, priceUSD: 4, image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400' },
+        ],
+      };
+      
+      return (
+        <section id="menu" className="py-24 bg-gradient-to-b from-cuban-cream to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <span className="text-cuban-orange font-semibold tracking-wider uppercase text-sm">Nuestra Carta</span>
+              <h2 className="font-display text-5xl md:text-6xl font-bold text-gray-900 mt-2 mb-4">
+                Menú <span className="gradient-text">Cubano</span>
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+                Sabores auténticos preparados con recetas tradicionales transmitidas por generaciones
+              </p>
+            </motion.div>
+            
+            {/* Category Tabs */}
+            <div className="flex flex-wrap justify-center gap-3 mb-12">
+              {Object.keys(categories).map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-6 py-3 rounded-full font-semibold transition-all ${
+                    activeCategory === cat
+                      ? 'bg-cuban-orange text-white shadow-lg scale-105'
+                      : 'bg-white text-gray-700 hover:bg-cuban-cream shadow-md'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+            
+            {/* Menu Grid */}
+            <motion.div
+              layout
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
+              <AnimatePresence mode="popLayout">
+                {categories[activeCategory].map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ delay: index * 0.1 }}
+                    onMouseEnter={() => setHoveredItem(item.id)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    className="menu-card rounded-2xl overflow-hidden shadow-lg hover-lift group"
+                  >
+                    <div className="relative h-56 overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      
+                      {item.tags?.map(tag => (
+                        <span key={tag} className="absolute top-3 left-3 bg-cuban-orange text-white text-xs font-bold px-3 py-1 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                      
+                      <button
+                        onClick={() => addToCart(item)}
+                        className="absolute bottom-3 right-3 bg-white text-cuban-orange p-3 rounded-full shadow-lg transform translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-cuban-orange hover:text-white"
+                      >
+                        <Icon name="plus" size={20} />
+                      </button>
+                    </div>
+                    
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-display text-xl font-bold text-gray-900">{item.name}</h3>
+                        <div className="text-right">
+                          <span className="block text-cuban-orange font-bold text-lg">{item.price} CUP</span>
+                          <span className="text-gray-400 text-sm">${item.priceUSD}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed mb-4">{item.desc}</p>
+                      
+                      <button
+                        onClick={() => addToCart(item)}
+                        className="w-full py-3 rounded-xl border-2 border-cuban-orange text-cuban-orange font-semibold hover:bg-cuban-orange hover:text-white transition-all flex items-center justify-center gap-2"
+                      >
+                        <Icon name="plus" size={18} />
+                        Añadir al pedido
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+        </section>
+      );
+    };
+    
+    // --- Cart Sidebar ---
+    const CartSidebar = ({ isOpen, onClose, cart, updateQuantity, removeFromCart, onCheckout }) => {
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const totalUSD = cart.reduce((sum, item) => sum + (item.priceUSD * item.quantity), 0);
+      
+      return (
+        <AnimatePresence>
+          {isOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={onClose}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              />
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-50 flex flex-col"
+              >
+                <div className="p-6 border-b flex items-center justify-between bg-cuban-cream">
+                  <h2 className="font-display text-2xl font-bold flex items-center gap-2">
+                    <Icon name="shoppingBag" size={24} />
+                    Tu Pedido ({cart.length})
+                  </h2>
+                  <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                    <Icon name="close" size={24} />
+                  </button>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto p-6">
+                  {cart.length === 0 ? (
+                    <div className="text-center py-12 text-gray-500">
+                      <Icon name="shoppingBag" size={48} className="mx-auto mb-4 opacity-30" />
+                      <p>Tu carrito está vacío</p>
+                      <button onClick={onClose} className="mt-4 text-cuban-orange font-semibold hover:underline">
+                        Ver menú
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {cart.map((item) => (
+                        <div key={item.id} className="flex gap-4 bg-gray-50 p-4 rounded-xl">
+                          <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
+                          <div className="flex-1">
+                            <h4 className="font-bold text-gray-900">{item.name}</h4>
+                            <p className="text-cuban-orange font-semibold">{item.price} CUP</p>
+                            
+                            <div className="flex items-center gap-3 mt-2">
+                              <button
+                                onClick={() => updateQuantity(item.id, -1)}
+                                className="w-8 h-8 rounded-full bg-white border flex items-center justify-center hover:bg-gray-100"
+                              >
+                                <Icon name="minus" size={16} />
+                              </button>
+                              <span className="font-semibold w-8 text-center">{item.quantity}</span>
+                              <button
+                                onClick={() => updateQuantity(item.id, 1)}
+                                className="w-8 h-8 rounded-full bg-white border flex items-center justify-center hover:bg-gray-100"
+                              >
+                                <Icon name="plus" size={16} />
+                              </button>
+                              <button
+                                onClick={() => removeFromCart(item.id)}
+                                className="ml-auto text-red-500 hover:text-red-700 p-2"
+                              >
+                                <Icon name="trash" size={18} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                {cart.length > 0 && (
+                  <div className="p-6 border-t bg-gray-50">
+                    <div className="flex justify-between mb-2 text-gray-600">
+                      <span>Subtotal</span>
+                      <span>{total} CUP (${totalUSD})</span>
+                    </div>
+                    <div className="flex justify-between mb-4 text-xl font-bold">
+                      <span>Total</span>
+                      <span className="text-cuban-orange">{total} CUP</span>
+                    </div>
+                    <button
+                      onClick={onCheckout}
+                      className="w-full bg-cuban-orange hover:bg-cuban-yellow text-white py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2"
+                    >
+                      <Icon name="whatsapp" size={24} />
+                      Pedir por WhatsApp
+                    </button>
+                  </div>
+                )}
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      );
+    };
+    
+    // --- Reservation Modal ---
+    const ReservationModal = ({ isOpen, onClose, showToast }) => {
+      const [step, setStep] = useState(1);
+      const [formData, setFormData] = useState({
+        nombre: '',
+        apellido: '',
+        telefono: '',
+        fecha: '',
+        hora: '',
+        personas: '2',
+        ocasion: '',
+        mesa: 'interior',
+        notas: ''
+      });
+      
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        const numero = '5356083109';
+        const mensaje = `🍽️ *Nueva Reserva - Los Cacharritos*
+
+*Cliente:* ${formData.nombre} ${formData.apellido}
+*Teléfono:* ${formData.telefono}
+*Fecha:* ${formData.fecha}
+*Hora:* ${formData.hora}
+*Personas:* ${formData.personas}
+*Ubicación:* ${formData.mesa === 'interior' ? 'Salón Interior' : 'Terraza'}
+*Ocasión:* ${formData.ocasion || 'Ninguna'}
+*Notas:* ${formData.notas || 'Ninguna'}
+
+¡Gracias por elegirnos! 🇨🇺`;
+
+        const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, '_blank');
+        
+        showToast('Redirigiendo a WhatsApp...', 'success');
+        onClose();
+        setStep(1);
+        setFormData({
+          nombre: '', apellido: '', telefono: '', fecha: '', hora: '',
+          personas: '2', ocasion: '', mesa: 'interior', notas: ''
+        });
+      };
+      
+      if (!isOpen) return null;
+      
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+          >
+            <div className="sticky top-0 bg-white p-6 border-b flex items-center justify-between z-10">
+              <div>
+                <h3 className="font-display text-2xl font-bold text-gray-900">Reserva tu Mesa</h3>
+                <p className="text-gray-500 text-sm">Paso {step} de 2</p>
+              </div>
+              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <Icon name="close" size={24} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {step === 1 ? (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.nombre}
+                        onChange={(e) => setFormData({...formData, nombre: e.target.value})}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-cuban-orange focus:ring-2 focus:ring-cuban-orange/20 outline-none transition-all"
+                        placeholder="Juan"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Apellido *</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.apellido}
+                        onChange={(e) => setFormData({...formData, apellido: e.target.value})}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-cuban-orange focus:ring-2 focus:ring-cuban-orange/20 outline-none transition-all"
+                        placeholder="Pérez"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono *</label>
+                    <input
+                      type="tel"
+                      required
+                      value={formData.telefono}
+                      onChange={(e) => setFormData({...formData, telefono: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-cuban-orange focus:ring-2 focus:ring-cuban-orange/20 outline-none transition-all"
+                      placeholder="+53 5 123 4567"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Fecha *</label>
+                      <input
+                        type="date"
+                        required
+                        value={formData.fecha}
+                        onChange={(e) => setFormData({...formData, fecha: e.target.value})}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-cuban-orange focus:ring-2 focus:ring-cuban-orange/20 outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Hora *</label>
+                      <input
+                        type="time"
+                        required
+                        value={formData.hora}
+                        onChange={(e) => setFormData({...formData, hora: e.target.value})}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-cuban-orange focus:ring-2 focus:ring-cuban-orange/20 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    className="w-full bg-cuban-orange text-white py-4 rounded-xl font-bold text-lg hover:bg-cuban-yellow transition-all flex items-center justify-center gap-2"
+                  >
+                    Continuar
+                    <Icon name="chevronRight" size={20} />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Número de personas</label>
+                    <select
+                      value={formData.personas}
+                      onChange={(e) => setFormData({...formData, personas: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-cuban-orange focus:ring-2 focus:ring-cuban-orange/20 outline-none transition-all"
+                    >
+                      {[1,2,3,4,5,6,7,8,9,10,11,12].map(n => (
+                        <option key={n} value={n}>{n} {n === 1 ? 'persona' : 'personas'}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">Preferencia de mesa</label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <label className={`cursor-pointer p-4 rounded-xl border-2 transition-all ${formData.mesa === 'interior' ? 'border-cuban-orange bg-cuban-orange/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                        <input
+                          type="radio"
+                          name="mesa"
+                          value="interior"
+                          checked={formData.mesa === 'interior'}
+                          onChange={(e) => setFormData({...formData, mesa: e.target.value})}
+                          className="hidden"
+                        />
+                        <div className="text-center">
+                          <span className="block text-2xl mb-1">🏠</span>
+                          <span className="font-semibold">Interior</span>
+                          <span className="block text-xs text-gray-500">Aire acondicionado</span>
+                        </div>
+                      </label>
+                      <label className={`cursor-pointer p-4 rounded-xl border-2 transition-all ${formData.mesa === 'exterior' ? 'border-cuban-orange bg-cuban-orange/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                        <input
+                          type="radio"
+                          name="mesa"
+                          value="exterior"
+                          checked={formData.mesa === 'exterior'}
+                          onChange={(e) => setFormData({...formData, mesa: e.target.value})}
+                          className="hidden"
+                        />
+                        <div className="text-center">
+                          <span className="block text-2xl mb-1">🌴</span>
+                          <span className="font-semibold">Terraza</span>
+                          <span className="block text-xs text-gray-500">Ambiente tropical</span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Ocasión especial</label>
+                    <input
+                      type="text"
+                      value={formData.ocasion}
+                      onChange={(e) => setFormData({...formData, ocasion: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-cuban-orange focus:ring-2 focus:ring-cuban-orange/20 outline-none transition-all"
+                      placeholder="Cumpleaños, aniversario, etc."
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notas adicionales</label>
+                    <textarea
+                      value={formData.notas}
+                      onChange={(e) => setFormData({...formData, notas: e.target.value})}
+                      rows="3"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-cuban-orange focus:ring-2 focus:ring-cuban-orange/20 outline-none transition-all resize-none"
+                      placeholder="Alergias, sillas para niños, etc."
+                    />
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="flex-1 py-4 rounded-xl border-2 border-gray-300 font-semibold hover:bg-gray-50 transition-all"
+                    >
+                      Atrás
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-[2] bg-cuban-orange hover:bg-cuban-yellow text-white py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2"
+                    >
+                      <Icon name="whatsapp" size={24} />
+                      Confirmar por WhatsApp
+                    </button>
+                  </div>
+                </>
+              )}
+            </form>
+          </motion.div>
+        </div>
+      );
+    };
+    
+    // --- Gallery with Lightbox ---
+    const Gallery = () => {
+      const [selectedImage, setSelectedImage] = useState(null);
+      
+      const images = [
+        { src: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800', title: 'Mojitos Artesanales', category: 'Bebidas' },
+        { src: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800', title: 'Ambiente Acogedor', category: 'Interior' },
+        { src: 'https://images.unsplash.com/photo-1534352956036-cd81e27fed21?w=800', title: 'Ropa Vieja', category: 'Platos' },
+        { src: 'https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=800', title: 'Lechón Asado', category: 'Platos' },
+        { src: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=800', title: 'Cócteles', category: 'Bar' },
+        { src: 'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=800', title: 'Postres Caseros', category: 'Postres' },
+      ];
+      
+      return (
+        <section id="galeria" className="py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <span className="text-cuban-orange font-semibold tracking-wider uppercase text-sm">Galería</span>
+              <h2 className="font-display text-5xl md:text-6xl font-bold text-gray-900 mt-2">
+                Momentos <span className="gradient-text">Cacharritos</span>
+              </h2>
+            </motion.div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {images.map((img, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  onClick={() => setSelectedImage(img)}
+                  className={`relative overflow-hidden rounded-2xl cursor-pointer group ${i === 0 || i === 3 ? 'md:col-span-2 md:row-span-2' : ''}`}
+                >
+                  <img
+                    src={img.src}
+                    alt={img.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                    <div>
+                      <span className="text-cuban-yellow text-sm font-semibold uppercase tracking-wider">{img.category}</span>
+                      <h3 className="text-white font-display text-xl font-bold">{img.title}</h3>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Lightbox */}
+          <AnimatePresence>
+            {selectedImage && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedImage(null)}
+                className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+              >
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className="absolute top-6 right-6 text-white/70 hover:text-white p-2"
+                >
+                  <Icon name="close" size={32} />
+                </button>
+                <motion.img
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0.9 }}
+                  src={selectedImage.src}
+                  alt={selectedImage.title}
+                  className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <div className="absolute bottom-6 left-0 right-0 text-center text-white">
+                  <h3 className="font-display text-2xl font-bold">{selectedImage.title}</h3>
+                  <p className="text-white/70">{selectedImage.category}</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+      );
+    };
+    
+    // --- Testimonials ---
+    const Testimonials = () => {
+      const reviews = [
+        {
+          name: 'Carlos Martínez',
+          role: 'Madrid, España',
+          text: 'La mejor ropa vieja que he probado fuera de casa de mi abuela. El ambiente es mágico y el servicio inmejorable.',
+          rating: 5,
+          image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100'
+        },
+        {
+          name: 'Laura González',
+          role: 'Buenos Aires, Argentina',
+          text: 'Vine por recomendación y superó todas mis expectativas. Los mojitos son arte en vaso. Volveré sin duda.',
+          rating: 5,
+          image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100'
+        },
+        {
+          name: 'Andrés Hernández',
+          role: 'La Habana, Cuba',
+          text: 'Local favorito de toda la familia. Celebramos todos los cumpleaños aquí. Calidad consistente por años.',
+          rating: 5,
+          image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100'
+        },
+        {
+          name: 'María Santos',
+          role: 'Miami, USA',
+          text: 'Un pedazo de Cuba auténtica. El lechón es espectacular y la terraza tiene un encanto especial.',
+          rating: 5,
+          image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100'
+        }
+      ];
+      
+      return (
+        <section id="testimonios" className="py-24 bg-cuban-cream">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <span className="text-cuban-orange font-semibold tracking-wider uppercase text-sm">Testimonios</span>
+              <h2 className="font-display text-5xl md:text-6xl font-bold text-gray-900 mt-2">
+                Lo que dicen <span className="gradient-text">nuestros clientes</span>
+              </h2>
+            </motion.div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {reviews.map((review, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-white p-6 rounded-2xl shadow-lg hover-lift"
+                >
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(5)].map((_, j) => (
+                      <Icon
+                        key={j}
+                        name="star"
+                        size={16}
+                        className={j < review.rating ? 'text-cuban-yellow' : 'text-gray-300'}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 mb-6 italic leading-relaxed">"{review.text}"</p>
+                  <div className="flex items-center gap-3">
+                    <img src={review.image} alt={review.name} className="w-12 h-12 rounded-full object-cover" />
+                    <div>
+                      <h4 className="font-bold text-gray-900">{review.name}</h4>
+                      <p className="text-sm text-gray-500">{review.role}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
+    
+    // --- Location & Contact ---
+    const Location = () => {
+      return (
+        <section id="contacto" className="py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                <span className="text-cuban-orange font-semibold tracking-wider uppercase text-sm">Visítanos</span>
+                <h2 className="font-display text-5xl font-bold text-gray-900 mt-2 mb-6">
+                  Te esperamos en <span className="gradient-text">La Habana</span>
+                </h2>
+                <p className="text-gray-600 text-lg mb-8 leading-relaxed">
+                  Ubicados en el corazón de Vedado, a pocos minutos del Malecón. 
+                  Disfruta de la auténtica cocina cubana en un ambiente familiar y acogedor.
+                </p>
+                
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-cuban-orange/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Icon name="mapPin" size={24} className="text-cuban-orange" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900">Dirección</h4>
+                      <p className="text-gray-600">Calle 23 e/ 12 y 14, Vedado<br/>La Habana, Cuba</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-cuban-orange/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Icon name="clock" size={24} className="text-cuban-orange" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900">Horario</h4>
+                      <p className="text-gray-600">Lunes a Domingo<br/>12:00 PM - 11:00 PM</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-cuban-orange/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Icon name="phone" size={24} className="text-cuban-orange" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900">Contacto</h4>
+                      <p className="text-gray-600">+53 5608 3109 (WhatsApp)<br/>reservas@loscacharritos.ha</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-4 mt-8">
+                  <a href="#" className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                    <Icon name="facebook" size={20} />
+                  </a>
+                  <a href="#" className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                    <Icon name="instagram" size={20} />
+                  </a>
+                  <a href="https://wa.me/5356083109" target="_blank" className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                    <Icon name="whatsapp" size={20} />
+                  </a>
+                </div>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="h-[500px] rounded-3xl overflow-hidden shadow-2xl"
+              >
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3665.6700882237!2d-82.6064791!3d22.9893574!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88a7a3b0a1b2c3d5%3A0x5e3f4c2b9a8d7e6f!2sLa%20Habana%2C%20Cuba!5e0!3m2!1ses-419!2ses!4v1680000000000"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Ubicación Los Cacharritos"
+                />
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+    
+    // --- Footer ---
+    const Footer = () => {
+      return (
+        <footer className="bg-cuban-dark text-white py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-4 gap-12 mb-12">
+              <div className="md:col-span-2">
+                <h3 className="font-display text-3xl font-bold text-cuban-yellow mb-4">Los Cacharritos</h3>
+                <p className="text-gray-400 max-w-md leading-relaxed">
+                  Desde 1998 sirviendo la auténtica cocina cubana en el corazón de La Habana. 
+                  Tradición, sabor y calidad en cada plato.
+                </p>
+              </div>
+              
+              <div>
+                <h4 className="font-bold text-lg mb-4">Enlaces Rápidos</h4>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="#inicio" className="hover:text-cuban-yellow transition-colors">Inicio</a></li>
+                  <li><a href="#menu" className="hover:text-cuban-yellow transition-colors">Menú</a></li>
+                  <li><a href="#galeria" className="hover:text-cuban-yellow transition-colors">Galería</a></li>
+                  <li><a href="#contacto" className="hover:text-cuban-yellow transition-colors">Contacto</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-bold text-lg mb-4">Contacto</h4>
+                <ul className="space-y-2 text-gray-400">
+                  <li>+53 5608 3109</li>
+                  <li>reservas@loscacharritos.ha</li>
+                  <li>Calle 23, Vedado</li>
+                  <li>La Habana, Cuba</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-gray-500 text-sm">© 2025 Los Cacharritos / Los Kacharritos. Todos los derechos reservados.</p>
+              <div className="flex gap-6 text-sm text-gray-500">
+                <a href="#" className="hover:text-white transition-colors">Política de privacidad</a>
+                <a href="#" className="hover:text-white transition-colors">Términos de servicio</a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      );
+    };
+    
+    // --- Back to Top Button ---
+    const BackToTop = () => {
+      const [isVisible, setIsVisible] = useState(false);
+      
+      useEffect(() => {
+        const toggleVisibility = () => {
+          setIsVisible(window.scrollY > 500);
+        };
+        window.addEventListener('scroll', toggleVisibility);
+        return () => window.removeEventListener('scroll', toggleVisibility);
+      }, []);
+      
+      const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+      
+      return (
+        <AnimatePresence>
+          {isVisible && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0 }}
+              onClick={scrollToTop}
+              className="fixed bottom-8 right-8 z-40 w-14 h-14 bg-cuban-orange text-white rounded-full shadow-lg hover:bg-cuban-yellow transition-colors flex items-center justify-center"
+            >
+              <Icon name="arrowUp" size={24} />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      );
+    };
+    
+    // --- Main App Component ---
+    const App = () => {
+      const [cart, setCart] = useState([]);
+      const [isCartOpen, setIsCartOpen] = useState(false);
+      const [isReservaOpen, setIsReservaOpen] = useState(false);
+      const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+      const [isDark, setIsDark] = useState(false);
+      
+      const showToast = useCallback((message, type = 'success') => {
+        setToast({ show: true, message, type });
+      }, []);
+      
+      const hideToast = useCallback(() => {
+        setToast({ show: false, message: '', type: 'success' });
+      }, []);
+      
+      const addToCart = (item) => {
+        setCart(prev => {
+          const existing = prev.find(i => i.id === item.id);
+          if (existing) {
+            return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i);
+          }
+          return [...prev, { ...item, quantity: 1 }];
+        });
+        showToast(`${item.name} añadido al carrito`);
+      };
+      
+      const updateQuantity = (id, delta) => {
+        setCart(prev => prev.map(item => {
+          if (item.id === id) {
+            const newQty = Math.max(1, item.quantity + delta);
+            return { ...item, quantity: newQty };
+          }
+          return item;
+        }));
+      };
+      
+      const removeFromCart = (id) => {
+        setCart(prev => prev.filter(item => item.id !== id));
+        showToast('Producto eliminado', 'info');
+      };
+      
+      const handleCheckout = () => {
+        const numero = '5356083109';
+        let mensaje = `🛒 *Nuevo Pedido - Los Cacharritos*\n\n`;
+        cart.forEach(item => {
+          mensaje += `• ${item.name} x${item.quantity} - ${item.price * item.quantity} CUP\n`;
+        });
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        mensaje += `\n*Total:* ${total} CUP\n\nGracias! 🇨🇺`;
+        
+        window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, '_blank');
+        setCart([]);
+        setIsCartOpen(false);
+        showToast('Redirigiendo a WhatsApp...');
+      };
+      
+      const toggleTheme = () => {
+        setIsDark(!isDark);
+        document.body.style.backgroundColor = isDark ? '#FDF5E6' : '#1a1a1a';
+        document.body.style.color = isDark ? '#1f2937' : '#f3f4f6';
+      };
+      
+      return (
+        <div className={`${isDark ? 'dark' : ''}`}>
+          <Header 
+            cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
+            onCartClick={() => setIsCartOpen(true)}
+            onReservaClick={() => setIsReservaOpen(true)}
+            isDark={isDark}
+            toggleTheme={toggleTheme}
+          />
+          
+          <main>
+            <Hero onReservaClick={() => setIsReservaOpen(true)} />
+            <MenuSection addToCart={addToCart} />
+            <Gallery />
+            <Testimonials />
+            <Location />
+          </main>
+          
+          <Footer />
+          
+          <CartSidebar 
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+            cart={cart}
+            updateQuantity={updateQuantity}
+            removeFromCart={removeFromCart}
+            onCheckout={handleCheckout}
+          />
+          
+          <ReservationModal 
+            isOpen={isReservaOpen}
+            onClose={() => setIsReservaOpen(false)}
+            showToast={showToast}
+          />
+          
+          <Toast 
+            message={toast.message}
+            type={toast.type}
+            isVisible={toast.show}
+            onClose={hideToast}
+          />
+          
+          <BackToTop />
+          
+          {/* Floating WhatsApp Button */}
+          <motion.a
+            href="https://wa.me/5356083109"
+            target="_blank"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            whileHover={{ scale: 1.1 }}
+            className="fixed bottom-8 left-8 z-40 w-16 h-16 bg-green-500 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-green-500/50 transition-shadow"
+          >
+            <Icon name="whatsapp" size={32} />
+          </motion.a>
+        </div>
+      );
+    };
+    
+    // Render App
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
